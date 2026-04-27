@@ -1,0 +1,36 @@
+{
+  "services": [
+    {
+      "id": "cctv",
+      "title": "Integrasi CCTV",
+      "description": "Menghubungkan CCTV warga ke pos keamanan secara real-time."
+    },
+    {
+      "id": "guest",
+      "title": "Digital Guest book",
+      "description": "Sistem undangan tamu berbasis QR Code untuk akses gerbang otomatis."
+    },
+    {
+      "id": "panic",
+      "title": "Tombol Peringatan Instan",
+      "description": "Notifikasi darurat langsung ke HP tim keamanan dan tetangga terdekat."
+    }
+  ],
+  "team": [
+    {
+      "id": "1",
+      "name": "Kevin Saputra",
+      "role": "CEO"
+    },
+    {
+      "id": "2",
+      "name": "Valentino",
+      "role": "Programmer"
+    },
+    {
+      "id": "3",
+      "name": "Boboiboy",
+      "role": "Designer"
+    }
+  ]
+}
