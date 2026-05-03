@@ -1,23 +1,43 @@
 'use client' 
 
-import { useState } from 'react'
+import { useState } from 'react';
+import { sendContact } from './actions'; // Pastikan fungsi ini sudah terhubung ke Supabase
 
 export default function ContactPage() {
-  const [formData, setFormData] = useState({ name: '', message: '' })
-  const [submitted, setSubmitted] = useState(false)
+  const [formData, setFormData] = useState({ name: '', message: '' });
+  const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // State untuk loading
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
     if (formData.name && formData.message) {
-      setSubmitted(true)
-      // Reset form
-      setFormData({ name: '', message: '' })
-      setTimeout(() => setSubmitted(false), 3000)
+      setIsLoading(true); // Mulai loading
+      
+      try {
+        // Konversi formData ke format yang dibutuhkan Server Action
+        const data = new FormData();
+        data.append('name', formData.name);
+        data.append('message', formData.message);
+
+        // Memanggil Server Action untuk simpan data ke Supabase
+        await sendContact(data);
+
+        setSubmitted(true);
+        setFormData({ name: '', message: '' }); // Reset form
+        
+        setTimeout(() => setSubmitted(false), 5000);
+      } catch (error) {
+        console.error("Gagal mengirim pesan:", error);
+        alert("Terjadi kesalahan saat mengirim pesan.");
+      } finally {
+        setIsLoading(false); // Matikan loading setelah selesai
+      }
     }
   }
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   }
 
   return (
@@ -27,9 +47,10 @@ export default function ContactPage() {
         Tertarik menggunakan JagaWarga di komplek Anda? Atau punya pertanyaan teknis? Kirim pesan kepada kami.
       </p>
 
+      {/* UX Feedback: Notifikasi Sukses */}
       {submitted && (
         <div className="alert alert-success mb-4" role="alert">
-          Terima kasih, {formData.name || 'Pesan Anda'} telah terkirim! Tim kami akan segera menghubungi Anda.
+          Pesan Anda telah berhasil terkirim ke sistem JagaWarga! Tim kami akan segera menghubungi Anda.
         </div>
       )}
 
@@ -44,6 +65,7 @@ export default function ContactPage() {
               onChange={handleChange}
               className="form-control" 
               placeholder="Contoh: Budi (Ketua RT 02)" 
+              disabled={isLoading} // Disable input saat loading
               required
             />
           </div>
@@ -56,14 +78,26 @@ export default function ContactPage() {
               className="form-control" 
               rows="4" 
               placeholder="Tuliskan pertanyaan atau detail komplek Anda..."
+              disabled={isLoading} // Disable input saat loading
               required
             ></textarea>
           </div>
-          <button type="submit" className="btn btn-success w-100 py-2 fw-bold">
-            Kirim Pesan
+          
+          {/* Tombol dengan Loading State */}
+          <button 
+            type="submit" 
+            className="btn btn-success w-100 py-2 fw-bold"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Mengirim...
+              </>
+            ) : 'Kirim Pesan'}
           </button>
         </form>
       </div>
     </div>
-  )
+  );
 }
